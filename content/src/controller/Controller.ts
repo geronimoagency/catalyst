@@ -119,7 +119,7 @@ export class Controller {
     const files = req.files
     const fixAttempt: boolean = req.query.fix === 'true'
 
-    if (req.body.ethAddress.toLowerCase() !== '0xEf4DBA5F83046069448F82B440Afc721FB63D437'.toLowerCase()) {
+    if (ethAddress.toLowerCase() !== '0xef4dba5f83046069448f82b440afc721fb63d437') {
       res.status(430).send({ errors: `Not authorized from ${ethAddress}` }).end()
     }
 
