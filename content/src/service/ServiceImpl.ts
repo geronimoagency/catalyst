@@ -210,13 +210,13 @@ export class ServiceImpl implements MetaverseContentService {
             auditInfo,
             hashes
           )
-          if (!validationResult.ok) {
-            ServiceImpl.LOGGER.warn(`Validations for deployment failed`, {
-              entityId,
-              errors: validationResult.errors?.join(',') ?? ''
-            })
-            return { errors: validationResult.errors ?? [] }
-          }
+          // if (!validationResult.ok) {
+          //   ServiceImpl.LOGGER.warn(`Validations for deployment failed`, {
+          //     entityId,
+          //     errors: validationResult.errors?.join(',') ?? ''
+          //   })
+          //   return { errors: validationResult.errors ?? [] }
+          // }
 
           const auditInfoComplete: AuditInfo = {
             ...auditInfo,

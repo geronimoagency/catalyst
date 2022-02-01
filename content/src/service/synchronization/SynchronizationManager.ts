@@ -3,7 +3,7 @@ import { ILoggerComponent } from '@well-known-components/interfaces'
 import ms from 'ms'
 import { AppComponents, IStatusCapableComponent, StatusProbeResult } from '../../types'
 import { DeploymentContext } from '../Service'
-import { bootstrapFromSnapshots } from './bootstrapFromSnapshots'
+// import { bootstrapFromSnapshots } from './bootstrapFromSnapshots'
 import { deployEntityFromRemoteServer } from './deployRemoteEntity'
 
 export interface SynchronizationManager {
@@ -82,7 +82,7 @@ export class ClusterSynchronizationManager implements SynchronizationManager, IS
     bootstrap: {
       // Note: If any deployment was overwritten by the snapshots, then we never reach them
       ClusterSynchronizationManager.LOGGER.info(`Starting to bootstrap from snapshots`)
-      await bootstrapFromSnapshots(this.components, this.components.contentCluster)
+      // await bootstrapFromSnapshots(this.components, this.components.contentCluster)
       this.synchronizationState = SynchronizationState.SYNCED
     }
 
