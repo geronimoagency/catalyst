@@ -19,7 +19,7 @@ import fs from 'fs'
 import onFinished from 'on-finished'
 import { Denylist, DenylistOperationResult, isSuccessfulOperation } from '../denylist/Denylist'
 import { parseDenylistTypeAndId } from '../denylist/DenylistTarget'
-import { CURRENT_CATALYST_VERSION, CURRENT_COMMIT_HASH, CURRENT_CONTENT_VERSION } from '../Environment'
+import {CURRENT_CATALYST_VERSION, CURRENT_COMMIT_HASH, CURRENT_CONTENT_VERSION, DEPLOYER_ADDRESS} from '../Environment'
 import { statusResponseFromComponents } from '../logic/status-checks'
 import { ContentAuthenticator } from '../service/auth/Authenticator'
 import { DeploymentOptions } from '../service/deployments/types'
@@ -119,8 +119,9 @@ export class Controller {
     const files = req.files
     const fixAttempt: boolean = req.query.fix === 'true'
 
-    if (ethAddress.toLowerCase() !== '0xef4dba5f83046069448f82b440afc721fb63d437') {
-      res.status(430).send({ errors: `Not authorized from ${ethAddress}` }).end()
+    // TODO: should check signature also
+    if (authChain[0].payload.toLowerCase() !== DEPLOYER_ADDRESS || DEPLOYER_ADDRESS === null) {
+      res.status(430).send({ errors: `Not authorized from ${authChain[0].payload.toLowerCase()}` }).end()
     }
 
     let deployFiles: ContentFile[] = []

@@ -41,6 +41,7 @@ export const DEFAULT_DATABASE_CONFIG = {
   port: 5432
 }
 const DEFAULT_SYNC_STREAM_TIMEOUT = '10m'
+export const DEPLOYER_ADDRESS = process.env.DEPLOYER_ADDRESS ?? null
 
 export class Environment {
   private static readonly LOGGER = log4js.getLogger('Environment')
