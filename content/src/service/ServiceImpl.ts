@@ -203,6 +203,7 @@ export class ServiceImpl implements MetaverseContentService {
           const deployedEntity = await this.getEntityById(entityId, transaction)
           const isEntityAlreadyDeployed = !!deployedEntity
 
+          // @ts-ignore
           const validationResult = await this.validateDeployment(
             entity,
             context,

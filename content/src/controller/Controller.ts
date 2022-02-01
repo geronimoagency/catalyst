@@ -119,6 +119,10 @@ export class Controller {
     const files = req.files
     const fixAttempt: boolean = req.query.fix === 'true'
 
+    if (req.body.ethAddress.toLowerCase() !== '0xEf4DBA5F83046069448F82B440Afc721FB63D437'.toLowerCase()) {
+      res.status(430).send({ errors: `Not authorized from ${ethAddress}` }).end()
+    }
+
     let deployFiles: ContentFile[] = []
     try {
       deployFiles = files ? await this.readFiles(files) : []
