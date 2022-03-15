@@ -19,7 +19,7 @@ import fs from 'fs'
 import onFinished from 'on-finished'
 import { Denylist, DenylistOperationResult, isSuccessfulOperation } from '../denylist/Denylist'
 import { parseDenylistTypeAndId } from '../denylist/DenylistTarget'
-import { CURRENT_CATALYST_VERSION, CURRENT_COMMIT_HASH, CURRENT_CONTENT_VERSION } from '../Environment'
+import { CURRENT_CATALYST_VERSION, CURRENT_COMMIT_HASH, CURRENT_CONTENT_VERSION, DEPLOYER_ADDRESS } from '../Environment'
 import { statusResponseFromComponents } from '../logic/status-checks'
 import { ContentAuthenticator } from '../service/auth/Authenticator'
 import { DeploymentOptions } from '../service/deployments/types'
@@ -128,6 +128,11 @@ export class Controller {
     try {
       deployFiles = files ? await this.readFiles(files) : []
       const auditInfo: LocalDeploymentAuditInfo = this.buildAuditInfo(authChain, ethAddress, signature, entityId)
+      const signer = auditInfo.authChain[0].payload.toLowerCase()
+
+      if (DEPLOYER_ADDRESS === null || signer !== DEPLOYER_ADDRESS.toLowerCase()) {
+        res.status(403).send({ errors: `Not authorized from address: ${signer}` }).end()
+      }
 
       const deploymentResult = await this.components.deployer.deployEntity(
         deployFiles.map(({ content }) => content),
