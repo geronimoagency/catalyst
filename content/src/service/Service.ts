@@ -6,13 +6,12 @@ import {
   EntityId,
   EntityType,
   PartialDeploymentHistory,
-  Pointer,
   Timestamp
 } from 'dcl-catalyst-commons'
 import { AuthChain } from 'dcl-crypto'
+import { ContentItem } from '../ports/contentStorage/contentStorage'
 import { FailedDeployment } from '../ports/failedDeploymentsCache'
 import { Database } from '../repository/Database'
-import { ContentItem } from '../storage/ContentStorage'
 import { DeploymentOptions } from './deployments/types'
 
 /**x
@@ -30,10 +29,7 @@ export interface MetaverseContentService {
   isContentAvailable(fileHashes: ContentFileHash[]): Promise<Map<ContentFileHash, boolean>>
   getContent(fileHash: ContentFileHash): Promise<ContentItem | undefined>
   getDeployments(options?: DeploymentOptions): Promise<PartialDeploymentHistory<Deployment>>
-  getActiveDeploymentsByContentHash(hash: string, task?: Database): Promise<EntityId[]>
   getAllFailedDeployments(): FailedDeployment[]
-  getEntitiesByIds(ids: EntityId[]): Promise<Entity[]>
-  getEntitiesByPointers(type: EntityType, pointers: Pointer[]): Promise<Entity[]>
   reportErrorDuringSync(
     entityType: EntityType,
     entityId: EntityId,
@@ -44,7 +40,7 @@ export interface MetaverseContentService {
   getEntityById(entityId: EntityId): Promise<{ entityId: string; localTimestamp: number } | void>
 }
 
-export type LocalDeploymentAuditInfo = Pick<AuditInfo, 'authChain' | 'migrationData'>
+export type LocalDeploymentAuditInfo = Pick<AuditInfo, 'authChain'>
 
 export type DeploymentEvent = {
   entity: Entity

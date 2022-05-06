@@ -1,12 +1,12 @@
-import { delay } from '@catalyst/commons'
-import { hashStreamV1 } from '@dcl/snapshots-fetcher/dist/utils'
+import { delay } from '@dcl/catalyst-node-commons'
+import { hashV1 } from '@dcl/hashing'
 import { ILoggerComponent } from '@well-known-components/interfaces'
 import { ContentFileHash, EntityType, Hashing, Timestamp } from 'dcl-catalyst-commons'
 import future from 'fp-future'
 import * as fs from 'fs'
 import { streamActiveDeployments } from '../../logic/database-queries/snapshots-queries'
 import { createContentFileWriterComponent } from '../../ports/contentFileWriter'
-import { bufferToStream } from '../../storage/ContentStorage'
+import { bufferToStream } from '../../ports/contentStorage/contentStorage'
 import { AppComponents, IStatusCapableComponent } from '../../types'
 
 const ALL_ENTITIES = Symbol('allEntities')
@@ -32,7 +32,10 @@ export class SnapshotManager implements IStatusCapableComponent, ISnapshotManage
   }
 
   constructor(
-    private readonly components: Pick<AppComponents, 'database' | 'metrics' | 'staticConfigs' | 'logs' | 'storage'>,
+    private readonly components: Pick<
+      AppComponents,
+      'database' | 'metrics' | 'staticConfigs' | 'logs' | 'storage' | 'denylist' | 'fs'
+    >,
     private readonly snapshotFrequencyInMilliSeconds: number
   ) {
     this.LOGGER = components.logs.getLogger('SnapshotManager')
@@ -80,7 +83,6 @@ export class SnapshotManager implements IStatusCapableComponent, ISnapshotManage
           }
         }
       }
-
       // signal that stop finished correctly
       resolve(true)
     })
@@ -186,7 +188,9 @@ export class SnapshotManager implements IStatusCapableComponent, ISnapshotManage
     // Phase 2) iterate all active deployments and write to files
     try {
       for await (const snapshotElem of streamActiveDeployments(this.components)) {
-        // TODO: [new-sync] filter out denylisted entities
+        if (this.components.denylist.isDenylisted(snapshotElem.entityId)) {
+          continue
+        }
 
         const str = JSON.stringify(snapshotElem) + '\n'
 
@@ -228,7 +232,7 @@ export class SnapshotManager implements IStatusCapableComponent, ISnapshotManage
         const previousHash = this.lastSnapshotsPerEntityType.get(entityType)?.hash
 
         // Hash the snapshot
-        const hash = await hashStreamV1(fs.createReadStream(fileName) as any)
+        const hash = await hashV1(fs.createReadStream(fileName) as any)
 
         // if success move the file to the contents folder
         await this.moveSnapshotFileToContentFolder(fileName, { hash, snapshotTimestamp: timestamps[entityType] || 0 })

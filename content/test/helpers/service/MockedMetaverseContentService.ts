@@ -6,7 +6,6 @@ import {
   EntityId,
   EntityType,
   EntityVersion,
-  LegacyAuditInfo,
   PartialDeploymentHistory,
   Pointer,
   Timestamp
@@ -14,11 +13,11 @@ import {
 import { AuthChain, AuthLinkType } from 'dcl-crypto'
 import { random } from 'faker'
 import { CURRENT_CONTENT_VERSION } from '../../../src/Environment'
+import { DeploymentWithAuthChain } from '../../../src/logic/database-queries/snapshots-queries'
+import { ContentItem, SimpleContentItem } from '../../../src/ports/contentStorage/contentStorage'
 import { FailedDeployment } from '../../../src/ports/failedDeploymentsCache'
 import { DeploymentOptions, PointerChangesOptions } from '../../../src/service/deployments/types'
-import { DeploymentPointerChanges } from '../../../src/service/pointers/types'
 import { DeploymentContext, LocalDeploymentAuditInfo, MetaverseContentService } from '../../../src/service/Service'
-import { ContentItem, SimpleContentItem } from '../../../src/storage/ContentStorage'
 import { IStatusCapableComponent, StatusProbeResult } from '../../../src/types'
 import { buildEntityAndFile } from './EntityTestFactory'
 
@@ -34,9 +33,8 @@ export class MockedMetaverseContentService implements MetaverseContentService, I
     }
   }
 
-  static readonly AUDIT_INFO: AuditInfo & LegacyAuditInfo = {
+  static readonly AUDIT_INFO: AuditInfo = {
     localTimestamp: Date.now(),
-    deployedTimestamp: Date.now(),
     authChain: [
       {
         type: AuthLinkType.ECDSA_PERSONAL_SIGNED_ENTITY,
@@ -49,7 +47,7 @@ export class MockedMetaverseContentService implements MetaverseContentService, I
 
   private readonly entities: Entity[]
   private readonly content: Map<ContentFileHash, Buffer>
-  private readonly pointerChanges: DeploymentPointerChanges[]
+  private readonly pointerChanges: DeploymentWithAuthChain[]
 
   constructor(builder: MockedMetaverseContentServiceBuilder) {
     this.entities = builder.entities
@@ -108,15 +106,6 @@ export class MockedMetaverseContentService implements MetaverseContentService, I
     })
   }
 
-  getActiveDeploymentsByContentHash(hash: string): Promise<EntityId[]> {
-    return Promise.resolve(
-      this.entities
-        .filter((entity) => entity.content?.find((item) => item.hash === hash) !== undefined)
-        .map((entity) => this.entityToDeployment(entity))
-        .map((entity) => entity.entityId)
-    )
-  }
-
   deployEntity(
     files: Buffer[],
     entityId: EntityId,
@@ -155,11 +144,9 @@ export class MockedMetaverseContentService implements MetaverseContentService, I
     return Promise.resolve(this.entities.filter(({ id }) => ids.includes(id)))
   }
 
-  getEntitiesByPointers(type: EntityType, pointers: string[]): Promise<Entity[]> {
+  getEntitiesByPointers(pointers: string[]): Promise<Entity[]> {
     return Promise.resolve(
-      this.entities.filter(
-        (entity) => entity.type === type && entity.pointers.some((pointer) => pointers.includes(pointer))
-      )
+      this.entities.filter((entity) => entity.pointers.some((pointer) => pointers.includes(pointer)))
     )
   }
 
@@ -184,7 +171,7 @@ export class MockedMetaverseContentService implements MetaverseContentService, I
 export class MockedMetaverseContentServiceBuilder {
   readonly entities: Entity[] = []
   readonly content: Map<ContentFileHash, Buffer> = new Map()
-  readonly pointerChanges: DeploymentPointerChanges[] = []
+  readonly pointerChanges: DeploymentWithAuthChain[] = []
 
   withEntity(newEntity: Entity): MockedMetaverseContentServiceBuilder {
     this.entities.push(newEntity)
@@ -196,7 +183,7 @@ export class MockedMetaverseContentServiceBuilder {
     return this
   }
 
-  withPointerChanges(delta: DeploymentPointerChanges): MockedMetaverseContentServiceBuilder {
+  withPointerChanges(delta: DeploymentWithAuthChain): MockedMetaverseContentServiceBuilder {
     this.pointerChanges.push(delta)
     return this
   }

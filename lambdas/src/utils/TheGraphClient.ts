@@ -2,7 +2,7 @@ import { parseUrn } from '@dcl/urn-resolver'
 import { Fetcher } from 'dcl-catalyst-commons'
 import { EthAddress } from 'dcl-crypto'
 import log4js from 'log4js'
-import { WearableId, WearablesFilters } from '../apis/collections/types'
+import { ThirdPartyIntegration, WearableId, WearablesFilters } from '../apis/collections/types'
 
 export class TheGraphClient {
   public static readonly MAX_PAGE_SIZE = 1000
@@ -121,6 +121,36 @@ export class TheGraphClient {
     }
   }
 
+  /**
+   * This method returns the list of third party integrations as well as collections
+   */
+  public async getThirdPartyIntegrations(): Promise<ThirdPartyIntegration[]> {
+    const query: Query<
+      { thirdParties: { id: string; metadata: { thirdParty: { name: string; description: string } } }[] },
+      ThirdPartyIntegration[]
+    > = {
+      description: 'fetch third parties',
+      subgraph: 'thirdPartyRegistrySubgraph',
+      query: QUERY_THIRD_PARTIES,
+      mapper: (response) => response.thirdParties.map((tp) => ({ urn: tp.id, ...tp.metadata.thirdParty }))
+    }
+    return this.runQuery(query, { thirdPartyType: 'third_party_v1' })
+  }
+
+  /**
+   * This method returns the third party resolver API to be used to query assets from any collection
+   * of given third party integration
+   */
+  public async findThirdPartyResolver(subgraph: keyof URLs, id: string): Promise<string | undefined> {
+    const query: Query<{ thirdParties: [{ resolver: string }] }, string | undefined> = {
+      description: 'fetch third party resolver',
+      subgraph: subgraph,
+      query: QUERY_THIRD_PARTY_RESOLVER,
+      mapper: (response) => response.thirdParties[0]?.resolver
+    }
+    return await this.runQuery(query, { id })
+  }
+
   private getOwnersByWearable(
     wearableIdsToCheck: [string, string[]][],
     subgraph: keyof URLs
@@ -144,7 +174,7 @@ export class TheGraphClient {
     const urnList = wearableIds.map((wearableId) => `"${wearableId}"`).join(',')
     // We need to add a 'P' prefix, because the graph needs the fragment name to start with a letter
     return `
-      P${ethAddress}: nfts(where: { owner: "${ethAddress}", searchItemType_in: ["wearable_v1", "wearable_v2", "smart_wearable_v1"], urn_in: [${urnList}] }, first: 1000) {
+      P${ethAddress}: nfts(where: { owner: "${ethAddress}", searchItemType_in: ["wearable_v1", "wearable_v2", "smart_wearable_v1", "emote_v1"], urn_in: [${urnList}] }, first: 1000) {
         urn
       }
     `
@@ -246,7 +276,7 @@ export class TheGraphClient {
   }
 
   private buildFilterQuery(filters: WearablesFilters & { lastId?: string }): string {
-    const whereClause: string[] = [`searchItemType_in: ["wearable_v1", "wearable_v2", "smart_wearable_v1"]`]
+    const whereClause: string[] = [`searchItemType_in: ["wearable_v1", "wearable_v2", "smart_wearable_v1", "emote_v1"]`]
     const params: string[] = []
     if (filters.textSearch) {
       params.push('$textSearch: String')
@@ -348,9 +378,32 @@ export class TheGraphClient {
   }
 }
 
+const QUERY_THIRD_PARTIES = `
+{
+  thirdParties {
+    id
+		metadata {
+      thirdParty {
+        name
+        description
+      }
+    }
+  }
+}
+`
+
+const QUERY_THIRD_PARTY_RESOLVER = `
+query ThirdPartyResolver($id: String!) {
+  thirdParties(where: {id: $id}) {
+    id
+    resolver
+  }
+}
+`
+
 const QUERY_WEARABLES_BY_OWNER: string = `
   query WearablesByOwner($owner: String, $first: Int, $skip: Int) {
-    nfts(where: {owner: $owner, searchItemType_in: ["wearable_v1", "wearable_v2", "smart_wearable_v1"]}, first: $first, skip: $skip) {
+    nfts(where: {owner: $owner, searchItemType_in: ["wearable_v1", "wearable_v2", "smart_wearable_v1", "emote_v1"]}, first: $first, skip: $skip) {
       urn,
       collection {
         isApproved
@@ -393,4 +446,5 @@ type URLs = {
   ensSubgraph: string
   collectionsSubgraph: string
   maticCollectionsSubgraph: string
+  thirdPartyRegistrySubgraph: string
 }

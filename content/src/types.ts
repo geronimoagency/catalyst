@@ -1,19 +1,24 @@
-import { DAOClient } from '@catalyst/commons'
+import { DAOClient } from '@dcl/catalyst-node-commons'
 import { Validator } from '@dcl/content-validator'
 import { JobLifecycleManagerComponent } from '@dcl/snapshots-fetcher/dist/job-lifecycle-manager'
 import { IJobQueue } from '@dcl/snapshots-fetcher/dist/job-queue-port'
 import { IDeployerComponent, RemoteEntityDeployment } from '@dcl/snapshots-fetcher/dist/types'
 import { IFetchComponent } from '@well-known-components/http-server'
 import { ILoggerComponent, IMetricsComponent } from '@well-known-components/interfaces'
-import { Fetcher } from 'dcl-catalyst-commons'
+import { EntityType, Fetcher } from 'dcl-catalyst-commons'
 import { Controller } from './controller/Controller'
-import { Denylist } from './denylist/Denylist'
 import { Environment } from './Environment'
 import { metricsDeclaration } from './metrics'
 import { MigrationManager } from './migrations/MigrationManager'
-import { IBloomFilterComponent } from './ports/bloomFilter'
+import { ActiveEntities } from './ports/activeEntities'
+import { ContentStorage } from './ports/contentStorage/contentStorage'
+import { Denylist } from './ports/denylist'
+import { DeploymentListComponent } from './ports/deploymentListComponent'
+import { IDeployRateLimiterComponent } from './ports/deployRateLimiterComponent'
 import { IFailedDeploymentsCacheComponent } from './ports/failedDeploymentsCache'
+import { FSComponent } from './ports/fs'
 import { IDatabaseComponent } from './ports/postgres'
+import { ISequentialTaskExecutorComponent } from './ports/sequecuentialTaskExecutor'
 import { Repository } from './repository/Repository'
 import { ContentAuthenticator } from './service/auth/Authenticator'
 import { DeploymentManager } from './service/deployments/DeploymentManager'
@@ -24,10 +29,10 @@ import { MetaverseContentService } from './service/Service'
 import { ISnapshotManager } from './service/snapshots/SnapshotManager'
 import { IChallengeSupervisor } from './service/synchronization/ChallengeSupervisor'
 import { ContentCluster } from './service/synchronization/ContentCluster'
-import { ClusterSynchronizationManager } from './service/synchronization/SynchronizationManager'
+import { IRetryFailedDeploymentsComponent } from './service/synchronization/retryFailedDeployments'
+import { ISynchronizationManager } from './service/synchronization/SynchronizationManager'
 import { SystemPropertiesManager } from './service/system-properties/SystemProperties'
 import { ServerValidator } from './service/validations/server'
-import { ContentStorage } from './storage/ContentStorage'
 
 // Minimum amount of needed stuff to make the sync work
 
@@ -41,18 +46,19 @@ export type AppComponents = {
   deployer: MetaverseContentService
   staticConfigs: {
     contentStorageFolder: string
+    tmpDownloadFolder: string
   }
   batchDeployer: IDeployerComponent
   synchronizationJobManager: JobLifecycleManagerComponent
-  deployedEntitiesFilter: IBloomFilterComponent
-  synchronizationManager: ClusterSynchronizationManager
+  synchronizationManager: ISynchronizationManager
+  deployedEntitiesFilter: DeploymentListComponent
   controller: Controller
   snapshotManager: ISnapshotManager
-  denylist: Denylist
   challengeSupervisor: IChallengeSupervisor
   contentCluster: ContentCluster
   pointerManager: PointerManager
   failedDeploymentsCache: IFailedDeploymentsCacheComponent
+  deployRateLimiter: IDeployRateLimiterComponent
   deploymentManager: DeploymentManager
   storage: ContentStorage
   authenticator: ContentAuthenticator
@@ -64,6 +70,11 @@ export type AppComponents = {
   catalystFetcher: Fetcher
   daoClient: DAOClient
   server: Server
+  retryFailedDeployments: IRetryFailedDeploymentsComponent
+  activeEntities: ActiveEntities
+  sequentialExecutor: ISequentialTaskExecutorComponent
+  denylist: Denylist
+  fs: FSComponent
 
   // this will be replaced by `database` and removed from here
   repository: Repository
@@ -88,4 +99,14 @@ export type StatusProbeResult = {
 
 export type IStatusCapableComponent = {
   getComponentStatus(): Promise<StatusProbeResult>
+}
+
+// TODO: Move this to catalyst-commons and remove the check for trailing s?
+export function parseEntityType(strType: string): EntityType {
+  if (strType.endsWith('s')) {
+    strType = strType.slice(0, -1)
+  }
+  strType = strType.toUpperCase().trim()
+  const type = EntityType[strType]
+  return type
 }

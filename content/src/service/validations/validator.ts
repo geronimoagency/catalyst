@@ -1,7 +1,7 @@
 import { createValidator as validator, ExternalCalls, Validator as IValidatorComponent } from '@dcl/content-validator'
 import { Authenticator } from 'dcl-crypto'
 import { EnvironmentConfig } from '../../Environment'
-import { streamToBuffer } from '../../storage/ContentStorage'
+import { streamToBuffer } from '../../ports/contentStorage/contentStorage'
 import { AppComponents } from '../../types'
 
 export function createValidator(
@@ -31,7 +31,8 @@ export function createValidator(
       },
       L2: {
         blocks: components.env.getConfig(EnvironmentConfig.BLOCKS_L2_SUBGRAPH_URL),
-        collections: components.env.getConfig(EnvironmentConfig.COLLECTIONS_L2_SUBGRAPH_URL)
+        collections: components.env.getConfig(EnvironmentConfig.COLLECTIONS_L2_SUBGRAPH_URL),
+        thirdPartyRegistry: components.env.getConfig(EnvironmentConfig.THIRD_PARTY_REGISTRY_L2_SUBGRAPH_URL)
       }
     }
   }

@@ -1,10 +1,12 @@
 import { metricsDefinitions as snapshotFetcherMetricsDefinitions } from '@dcl/snapshots-fetcher'
 import { validateMetricsDeclaration } from '@well-known-components/metrics'
 import { getDefaultHttpMetrics } from '@well-known-components/metrics/dist/http'
+import { sequentialJobMetrics } from './ports/sequecuentialTaskExecutor'
 
 export const metricsDeclaration = validateMetricsDeclaration({
   ...getDefaultHttpMetrics(),
   ...snapshotFetcherMetricsDefinitions,
+  ...sequentialJobMetrics,
   total_deployments_count: {
     help: 'Total number of deployments made to the content server',
     type: 'counter',
@@ -53,16 +55,24 @@ export const metricsDeclaration = validateMetricsDeclaration({
     labelNames: []
   },
 
+  // TODO: Unify this metrics
+
   dcl_content_failed_deployments_total: {
     help: 'Total failed deployments',
     type: 'counter',
     labelNames: []
   },
 
+  dcl_content_rate_limited_deployments_total: {
+    help: 'Total failed deployments due rate limit',
+    type: 'counter',
+    labelNames: ['entity_type']
+  },
+
   dcl_deployments_endpoint_counter: {
     help: 'Total deployments through HTTP',
     type: 'counter',
-    labelNames: ['kind'] // kind=(success|validation|error)
+    labelNames: ['kind'] // kind=(success|validation_error|error)
   },
 
   dcl_deployment_time: {
@@ -85,5 +95,29 @@ export const metricsDeclaration = validateMetricsDeclaration({
     help: 'Pending downloading jobs',
     type: 'gauge',
     labelNames: ['entity_type']
+  },
+  dcl_files_migrated: {
+    help: 'Files migrated to new folder structure',
+    type: 'counter',
+    labelNames: []
+  },
+  dcl_entities_cache_accesses_total: {
+    help: 'Entities cache accesses (miss or hit) by entity type',
+    type: 'counter',
+    labelNames: ['entity_type', 'result']
+  },
+  dcl_entities_cache_storage_max_size: {
+    help: 'Entities cache storage max size',
+    type: 'gauge'
+  },
+  dcl_entities_cache_storage_size: {
+    help: 'Entities cache storage size',
+    type: 'gauge',
+    labelNames: ['entity_type']
+  },
+  dcl_db_query_duration_seconds: {
+    help: 'Histogram of query duration to the database in seconds per query',
+    type: 'histogram',
+    labelNames: ['query', 'status'] // status=(success|error)
   }
 })

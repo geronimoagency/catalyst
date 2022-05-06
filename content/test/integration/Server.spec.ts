@@ -1,10 +1,10 @@
 import { Entity as ControllerEntity, Entity, EntityType } from 'dcl-catalyst-commons'
 import fetch from 'node-fetch'
 import { stub } from 'sinon'
-import { ControllerPointerChanges } from '../../src/controller/Controller'
 import { EnvironmentConfig } from '../../src/Environment'
+import { DeploymentWithAuthChain } from '../../src/logic/database-queries/snapshots-queries'
+import { SimpleContentItem } from '../../src/ports/contentStorage/contentStorage'
 import { Server } from '../../src/service/Server'
-import { SimpleContentItem } from '../../src/storage/ContentStorage'
 import { randomEntity } from '../helpers/service/EntityTestFactory'
 import { buildContent } from '../helpers/service/MockedMetaverseContentService'
 import { E2ETestEnvironment } from './E2ETestEnvironment'
@@ -25,7 +25,6 @@ describe('Integration - Server', () => {
 
   afterAll(async () => {
     await testEnv.clearDatabases()
-    await testEnv.stopAllComponentsFromAllServersAndDeref()
     await testEnv.stop()
   })
 
@@ -38,8 +37,8 @@ describe('Integration - Server', () => {
 
     await server.start()
 
-    stub(components.deployer, 'getEntitiesByIds').resolves([entity1, entity2])
-    stub(components.deployer, 'getEntitiesByPointers').resolves([entity1, entity2])
+    stub(components.activeEntities, 'withIds').resolves([entity1, entity2])
+    stub(components.activeEntities, 'withPointers').resolves([entity1, entity2])
     stub(components.deployer, 'getContent').resolves(SimpleContentItem.fromBuffer(content.buffer))
   })
 
@@ -91,7 +90,7 @@ describe('Integration - Server', () => {
   it(`PointerChanges`, async () => {
     const response = await fetch(`${address}/pointer-changes?entityType=${entity1.type}`)
     expect(response.ok).toBe(true)
-    const { deltas }: { deltas: ControllerPointerChanges[] } = await response.json()
+    const { deltas }: { deltas: DeploymentWithAuthChain[] } = await response.json()
     expect(Array.isArray(deltas)).toBe(true)
   })
 

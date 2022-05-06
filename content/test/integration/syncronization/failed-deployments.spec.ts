@@ -1,6 +1,7 @@
 import { createIdentity } from 'eth-crypto'
 import { stub } from 'sinon'
 import { EnvironmentConfig } from '../../../src/Environment'
+import { retryFailedDeploymentExecution } from '../../../src/logic/deployments'
 import { FailedDeployment, FailureReason } from '../../../src/ports/failedDeploymentsCache'
 import { assertDeploymentFailed, assertDeploymentFailsWith, assertEntitiesAreActiveOnServer } from '../E2EAssertions'
 import { loadTestEnvironment } from '../E2ETestEnvironment'
@@ -13,7 +14,6 @@ loadTestEnvironment()('Errors during sync', (testEnv) => {
       ;[this.server1, this.server2] = await testEnv
         .configServer('2s')
         .withConfig(EnvironmentConfig.DECENTRALAND_ADDRESS, this.identity.address)
-        .withConfig(EnvironmentConfig.DISABLE_DENYLIST, false)
         .andBuildMany(2)
 
       // Start server1
@@ -109,6 +109,33 @@ loadTestEnvironment()('Errors during sync', (testEnv) => {
         })
       })
     })
+
+    describe('ignore to fix the failed deployment when there are newer entities', function () {
+      beforeEach(async function () {
+        // Deploy a new entity for the same pointer
+        this.anotherEntityCombo = await buildDeployDataAfterEntity(this.controllerEntity, ['0,1'], {
+          metadata: 'metadata2'
+        })
+        // Deploy entity 2 on server 2
+        await this.server2.deploy(this.anotherEntityCombo.deployData)
+        await awaitUntil(() => assertEntitiesAreActiveOnServer(this.server2, this.anotherEntityCombo.controllerEntity))
+        await awaitUntil(() =>
+          assertDeploymentFailed(this.server2, FailureReason.DEPLOYMENT_ERROR, this.controllerEntity)
+        )
+
+        // Restore server validations to detect the newer entity
+        this.serverValidatorStub2.restore()
+
+        await retryFailedDeploymentExecution(this.server2.components)
+      })
+
+      it('is removed from failed', async function () {
+        await awaitUntil(async () => {
+          const newFailedDeployments: FailedDeployment[] = await this.server2.getFailedDeployments()
+          expect(newFailedDeployments.length).toBe(0)
+        })
+      })
+    })
   })
 
   describe('Deploy as fix a not failed entity', function () {
@@ -118,7 +145,6 @@ loadTestEnvironment()('Errors during sync', (testEnv) => {
         .configServer('2s')
         .withConfig(EnvironmentConfig.DISABLE_SYNCHRONIZATION, true)
         .withConfig(EnvironmentConfig.DECENTRALAND_ADDRESS, this.identity.address)
-        .withConfig(EnvironmentConfig.DISABLE_DENYLIST, false)
         .andBuild()
 
       this.validatorStub1 = stub(this.server1.components.serverValidator, 'validate')

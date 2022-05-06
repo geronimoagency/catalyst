@@ -1,12 +1,11 @@
-import { initializeMetricsServer } from '@catalyst/commons'
 import { CONTENT_API } from '@dcl/catalyst-api-specs'
+import { initializeMetricsServer } from '@dcl/catalyst-node-commons'
 import { IBaseComponent, ILoggerComponent } from '@well-known-components/interfaces'
 import compression from 'compression'
 import cors from 'cors'
 import { once } from 'events'
 import express, { NextFunction, RequestHandler } from 'express'
 import * as OpenApiValidator from 'express-openapi-validator'
-import fs from 'fs'
 import http from 'http'
 import log4js from 'log4js'
 import morgan from 'morgan'
@@ -25,7 +24,7 @@ export class Server implements IBaseComponent {
   private app: express.Express
   private httpServer: http.Server
 
-  constructor(protected components: Pick<AppComponents, 'controller' | 'metrics' | 'env' | 'logs'>) {
+  constructor(protected components: Pick<AppComponents, 'controller' | 'metrics' | 'env' | 'logs' | 'fs'>) {
     const { env, controller, metrics, logs } = components
     this.LOGGER = logs.getLogger('HttpServer')
     // Set logger
@@ -65,34 +64,46 @@ export class Server implements IBaseComponent {
     if (env.getConfig(EnvironmentConfig.LOG_REQUESTS)) {
       this.app.use(morgan('combined'))
     }
-    if (env.getConfig(EnvironmentConfig.VALIDATE_API)) {
+
+    if (env.getConfig(EnvironmentConfig.VALIDATE_API) || process.env.CI === 'true') {
       this.app.use(
         OpenApiValidator.middleware({
           apiSpec: CONTENT_API,
-          validateResponses: process.env.CI == 'true',
-          validateRequests: true
+          validateResponses: true,
+          validateRequests: false,
+          ignoreUndocumented: true,
+          ignorePaths: /\/entities/
         })
       )
     }
 
     this.registerRoute('/entities/:type', controller, controller.getEntities)
-    this.registerRoute('/entities', controller, controller.createEntity, HttpMethod.POST, upload.any())
+    this.registerRoute('/entities/active/collections/:collectionUrn', controller, controller.filterByUrn)
+    this.registerRoute('/entities', controller, controller.createEntity, HttpMethod.POST, upload.any()) // TODO: Deprecate
+    this.registerRoute('/entities/active', controller, controller.getActiveEntities, HttpMethod.POST)
+    this.registerRoute('/contents/:hashId', controller, controller.headContent, HttpMethod.HEAD) // Register before GET
     this.registerRoute('/contents/:hashId', controller, controller.getContent, HttpMethod.GET)
-    this.registerRoute('/contents/:hashId', controller, controller.headContent, HttpMethod.HEAD)
     this.registerRoute('/available-content', controller, controller.getAvailableContent)
     this.registerRoute('/audit/:type/:entityId', controller, controller.getAudit)
     this.registerRoute('/deployments', controller, controller.getDeployments)
     this.registerRoute('/contents/:hashId/active-entities', controller, controller.getActiveDeploymentsByContentHash)
     this.registerRoute('/status', controller, controller.getStatus)
-    this.registerRoute('/denylist', controller, controller.getAllDenylistTargets)
-    this.registerRoute('/denylist/:type/:id', controller, controller.addToDenylist, HttpMethod.PUT)
-    this.registerRoute('/denylist/:type/:id', controller, controller.removeFromDenylist, HttpMethod.DELETE)
-    this.registerRoute('/denylist/:type/:id', controller, controller.isTargetDenylisted, HttpMethod.HEAD)
     this.registerRoute('/failed-deployments', controller, controller.getFailedDeployments)
     this.registerRoute('/challenge', controller, controller.getChallenge)
     this.registerRoute('/pointer-changes', controller, controller.getPointerChanges)
     this.registerRoute('/snapshot/:type', controller, controller.getSnapshot) // TODO: Deprecate
     this.registerRoute('/snapshot', controller, controller.getAllSnapshots)
+
+    if (env.getConfig(EnvironmentConfig.VALIDATE_API) || process.env.CI === 'true') {
+      this.app.use((err, req, res, next) => {
+        console.error(err)
+        res.status(err.status || 500).json({
+          message: err.message,
+          errors: err.errors
+        })
+        next()
+      })
+    }
   }
 
   /*
@@ -167,8 +178,9 @@ export class Server implements IBaseComponent {
     this.LOGGER.info("Cleaning up the Server's uploads directory...")
     try {
       const directory = Server.UPLOADS_DIRECTORY
-      fs.readdirSync(directory).forEach((file) => {
-        fs.unlinkSync(path.join(directory, file))
+      const files = await this.components.fs.readdir(directory)
+      files.forEach(async (file) => {
+        await this.components.fs.unlink(path.join(directory, file))
       })
       this.LOGGER.info('Cleaned up!')
     } catch (e) {

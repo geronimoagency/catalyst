@@ -1,7 +1,6 @@
 import { createJobQueue } from '@dcl/snapshots-fetcher/dist/job-queue-port'
 import { IDeployerComponent, RemoteEntityDeployment } from '@dcl/snapshots-fetcher/dist/types'
 import { IBaseComponent } from '@well-known-components/interfaces'
-import { streamAllEntityIds } from '../../logic/database-queries/deployments-queries'
 import { isEntityDeployed } from '../../logic/deployments'
 import { FailureReason } from '../../ports/failedDeploymentsCache'
 import { AppComponents, CannonicalEntityDeployment } from '../../types'
@@ -27,18 +26,31 @@ export function createBatchDeployerComponent(
     | 'staticConfigs'
     | 'database'
     | 'deployedEntitiesFilter'
+    | 'storage'
   >,
-  queueOptions: createJobQueue.Options
+  syncOptions: {
+    ignoredTypes: Set<string>
+    queueOptions: createJobQueue.Options
+  }
 ): IDeployerComponent & IBaseComponent {
   const logs = components.logs.getLogger('DeployerComponent')
 
-  const parallelDeploymentJobs = createJobQueue(queueOptions)
+  const parallelDeploymentJobs = createJobQueue(syncOptions.queueOptions)
 
   // accumulator of all deployments
   const deploymentsMap = new Map<string, CannonicalEntityDeployment>()
   const successfulDeployments = new Set<string>()
 
-  async function shouldEntityDeploymentBeIgnored(entity: RemoteEntityDeployment): Promise<boolean> {
+  /**
+   * This function is used to filter out (ignore) deployments coming from remote
+   * servers only. Local deployments using POST /entities _ARE NOT_ filtered by this function.
+   */
+  async function shouldRemoteEntityDeploymentBeIgnored(entity: RemoteEntityDeployment): Promise<boolean> {
+    // ignore specific entity types using EnvironmentConfig.SYNC_IGNORED_ENTITY_TYPES
+    if (syncOptions.ignoredTypes.has(entity.entityType)) {
+      return true
+    }
+
     // ignore entities if those were successfully deployed during this execution
     if (successfulDeployments.has(entity.entityId)) return true
 
@@ -52,7 +64,7 @@ export function createBatchDeployerComponent(
   }
 
   async function handleDeploymentFromServer(entity: RemoteEntityDeployment, contentServer: string) {
-    if (await shouldEntityDeploymentBeIgnored(entity)) {
+    if (await shouldRemoteEntityDeploymentBeIgnored(entity)) {
       // early return to prevent noops
       components.metrics.increment('dcl_ignored_sync_deployments')
       return
@@ -115,26 +127,9 @@ export function createBatchDeployerComponent(
     }
   }
 
-  async function createBloomFilterDeployments() {
-    const start = Date.now()
-
-    const filter = components.deployedEntitiesFilter
-    filter.reset()
-    let elements = 0
-    for await (const row of streamAllEntityIds(components)) {
-      elements++
-      filter.add(row.entityId)
-    }
-    logs.info(`Bloom filter recreated.`, { timeMs: Date.now() - start, elements })
-  }
-
-  // TODO: [new-sync] every now and then cleanup the deploymentsMap of old deployments
-
   return {
-    async start() {
-      await createBloomFilterDeployments()
-    },
     async stop() {
+      // stop will wait for the queue to end.
       return parallelDeploymentJobs.onIdle()
     },
     onIdle() {

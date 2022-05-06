@@ -1,7 +1,6 @@
 import { Deployment, EntityVersion, PartialDeploymentHistory } from 'dcl-catalyst-commons'
 import { getContentFiles } from '../../logic/database-queries/content-files-queries'
 import { getHistoricalDeployments } from '../../logic/database-queries/deployments-queries'
-import { getMigrationData } from '../../logic/database-queries/migration-data-queries'
 import { AppComponents } from '../../types'
 import { DeploymentOptions } from './types'
 
@@ -15,7 +14,7 @@ export function getCuratedLimit(options?: DeploymentOptions): number {
 }
 
 export async function getDeployments(
-  components: Pick<AppComponents, 'database'>,
+  components: Pick<AppComponents, 'database' | 'denylist' | 'metrics'>,
   options?: DeploymentOptions
 ): Promise<PartialDeploymentHistory<Deployment>> {
   const curatedOffset = getCuratedOffset(options)
@@ -32,12 +31,15 @@ export async function getDeployments(
 
   const moreData = deploymentsWithExtra.length > curatedLimit
 
-  const deploymentsResult = deploymentsWithExtra.slice(0, curatedLimit)
+  let deploymentsResult = deploymentsWithExtra.slice(0, curatedLimit)
+
   const deploymentIds = deploymentsResult.map(({ deploymentId }) => deploymentId)
+
   const content = await getContentFiles(components, deploymentIds)
 
-  // TODO [new-sync]: migrationData nolonger required
-  const migrationData = await getMigrationData(components, deploymentIds)
+  if (!options?.includeDenylisted) {
+    deploymentsResult = deploymentsResult.filter((result) => !components.denylist.isDenylisted(result.entityId))
+  }
 
   const deployments: Deployment[] = deploymentsResult.map((result) => ({
     entityVersion: result.version as EntityVersion,
@@ -52,13 +54,12 @@ export async function getDeployments(
       version: result.version,
       authChain: result.authChain,
       localTimestamp: result.localTimestamp,
-      overwrittenBy: result.overwrittenBy,
-      migrationData: migrationData.get(result.deploymentId)
+      overwrittenBy: result.overwrittenBy
     }
   }))
 
   return {
-    deployments: deployments,
+    deployments,
     filters: {
       ...options?.filters
     },

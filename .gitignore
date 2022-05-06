@@ -1,6 +1,7 @@
 
 .env
 coverage
+api-coverage
 dist
 **/node_modules
 yarn-error.log
@@ -13,3 +14,5 @@ linked-peer-package
 **/tsconfig.tsbuildinfo
 storage_*/**
 .idea
+storage/**
+serverStorage.json

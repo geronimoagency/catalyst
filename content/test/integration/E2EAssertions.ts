@@ -1,3 +1,4 @@
+import { hashV0, hashV1 } from '@dcl/hashing'
 import assert from 'assert'
 import { DeploymentData } from 'dcl-catalyst-client'
 import {
@@ -6,7 +7,6 @@ import {
   Entity as ControllerEntity,
   EntityContentItemReference,
   EntityVersion,
-  Hashing,
   Timestamp
 } from 'dcl-catalyst-commons'
 import { Authenticator } from 'dcl-crypto'
@@ -146,7 +146,6 @@ function assertEqualsDeployment(actualDeployment: ControllerDeployment, expected
   assert.equal(actualDeployment.deployedBy, expectedDeployment.deployedBy)
   assert.equal(actualDeployment.auditInfo.version, expectedDeployment.auditInfo.version)
   assert.deepEqual(actualDeployment.auditInfo.authChain, expectedDeployment.auditInfo.authChain)
-  assert.deepEqual(actualDeployment.auditInfo.migrationData, expectedDeployment.auditInfo.migrationData)
   assert.equal(actualDeployment.auditInfo.isDenylisted, expectedDeployment.auditInfo.isDenylisted)
   assert.deepEqual(actualDeployment.auditInfo.denylistedContent, expectedDeployment.auditInfo.denylistedContent)
   assert.ok(actualDeployment.auditInfo.localTimestamp >= expectedDeployment.auditInfo.localTimestamp)
@@ -160,10 +159,7 @@ async function assertEntityIsOnServer(server: TestProgram, entity: ControllerEnt
 
 export async function assertFileIsOnServer(server: TestProgram, hash: ContentFileHash) {
   const content = await server.downloadContent(hash)
-  const downloadedContentHashes = await Promise.all([
-    Hashing.calculateBufferHash(content),
-    Hashing.calculateIPFSHash(content)
-  ])
+  const downloadedContentHashes = await Promise.all([hashV0(content), hashV1(content)])
   assert.ok(downloadedContentHashes.includes(hash))
 }
 

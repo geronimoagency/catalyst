@@ -1,20 +1,23 @@
+import { createTestMetricsComponent } from '@well-known-components/metrics'
 import { Deployment, EntityType, EntityVersion, PartialDeploymentHistory } from 'dcl-catalyst-commons'
+import { safe } from 'jest-extra-utils'
 import { restore, stub } from 'sinon'
 import { ContentFilesRow } from '../../../../src/logic/database-queries/content-files-queries'
 import { HistoricalDeploymentsRow } from '../../../../src/logic/database-queries/deployments-queries'
 import { MigrationDataRow } from '../../../../src/logic/database-queries/migration-data-queries'
+import { metricsDeclaration } from '../../../../src/metrics'
 import {
-  getCuratedLimit,
-  getCuratedOffset,
-  getDeployments,
-  MAX_HISTORY_LIMIT
+    getCuratedLimit,
+    getCuratedOffset,
+    getDeployments,
+    MAX_HISTORY_LIMIT
 } from '../../../../src/service/deployments/deployments'
 import { DeploymentOptions } from '../../../../src/service/deployments/types'
 import { AppComponents } from '../../../../src/types'
 
 describe('deployments service', () => {
   describe('getDeployments', () => {
-    let components: Pick<AppComponents, 'database'>
+    let components: Pick<AppComponents, 'database' | 'denylist' | 'metrics'>
     let result: PartialDeploymentHistory<Deployment>
 
     const deploymentIds = [127, 255]
@@ -79,33 +82,110 @@ describe('deployments service', () => {
       }
     }
 
-    beforeAll(() => {
-      components = { database: { queryWithValues: () => {} } as any }
-      stub(components.database, 'queryWithValues')
-        .onFirstCall()
-        .resolves({ rows: historicalDeploymentsRows, rowCount: 2 })
-        .onSecondCall()
-        .resolves({ rows: contentFiles, rowCount: 2 })
-        .onThirdCall()
-        .resolves({ rows: migrationData, rowCount: 2 })
+    describe('when no item is denylisted', () => {
+      beforeAll(() => {
+        components = {
+          database: safe({ queryWithValues: () => {} }),
+          denylist: { isDenylisted: () => false },
+          metrics: createTestMetricsComponent(metricsDeclaration)
+        }
+        stub(components.database, 'queryWithValues')
+          .onFirstCall()
+          .resolves({ rows: historicalDeploymentsRows, rowCount: 2 })
+          .onSecondCall()
+          .resolves({ rows: contentFiles, rowCount: 2 })
+          .onThirdCall()
+          .resolves({ rows: migrationData, rowCount: 2 })
+      })
+
+      afterAll(() => {
+        restore()
+      })
+
+      it('should return the deployments result of passing the correct filters to get the historical deployments', async () => {
+        result = await getDeployments(components, options)
+
+        expect(result).toEqual(
+          expect.objectContaining({
+            deployments: expect.arrayContaining([
+              expect.objectContaining({ entityId: historicalDeploymentsRows[0].entity_id }),
+              expect.objectContaining({ entityId: historicalDeploymentsRows[1].entity_id })
+            ]),
+            filters: options.filters
+          })
+        )
+      })
     })
 
-    afterAll(() => {
-      restore()
+    describe('with a denylisted item', () => {
+      beforeAll(() => {
+        components = {
+          database: safe({ queryWithValues: () => {} }),
+          denylist: { isDenylisted: () => false },
+          metrics: createTestMetricsComponent(metricsDeclaration)
+        }
+        stub(components.database, 'queryWithValues')
+          .onFirstCall()
+          .resolves({ rows: historicalDeploymentsRows, rowCount: 2 })
+          .onSecondCall()
+          .resolves({ rows: contentFiles, rowCount: 2 })
+          .onThirdCall()
+          .resolves({ rows: migrationData, rowCount: 2 })
+      })
+
+      afterAll(() => {
+        restore()
+      })
+
+      it("should not return a deployment if it's denylisted", async () => {
+        stub(components.denylist, 'isDenylisted').onFirstCall().returns(true).returns(false)
+        result = await getDeployments(components, options)
+
+        expect(result).toEqual(
+          expect.objectContaining({
+            deployments: expect.arrayContaining([
+              expect.objectContaining({ entityId: historicalDeploymentsRows[1].entity_id })
+            ]),
+            filters: options.filters
+          })
+        )
+      })
     })
 
-    it('should return the deployments result of passing the correct filters to get the historical deployments', async () => {
-      result = await getDeployments(components, options)
+    describe('with a denylisted item but with includeDenylisted param', () => {
+      beforeAll(() => {
+        components = {
+          database: safe({ queryWithValues: () => {} }),
+          denylist: { isDenylisted: () => false },
+          metrics: createTestMetricsComponent(metricsDeclaration)
+        }
+        stub(components.database, 'queryWithValues')
+          .onFirstCall()
+          .resolves({ rows: historicalDeploymentsRows, rowCount: 2 })
+          .onSecondCall()
+          .resolves({ rows: contentFiles, rowCount: 2 })
+          .onThirdCall()
+          .resolves({ rows: migrationData, rowCount: 2 })
+      })
 
-      expect(result).toEqual(
-        expect.objectContaining({
-          deployments: expect.arrayContaining([
-            expect.objectContaining({ entityId: historicalDeploymentsRows[0].entity_id }),
-            expect.objectContaining({ entityId: historicalDeploymentsRows[1].entity_id })
-          ]),
-          filters: options.filters
-        })
-      )
+      afterAll(() => {
+        restore()
+      })
+
+      it("should not return a deployment if it's denylisted", async () => {
+        stub(components.denylist, 'isDenylisted').onFirstCall().returns(true).returns(false)
+        result = await getDeployments(components, { ...options, includeDenylisted: true })
+
+        expect(result).toEqual(
+          expect.objectContaining({
+            deployments: expect.arrayContaining([
+              expect.objectContaining({ entityId: historicalDeploymentsRows[0].entity_id }),
+              expect.objectContaining({ entityId: historicalDeploymentsRows[1].entity_id })
+            ]),
+            filters: options.filters
+          })
+        )
+      })
     })
   })
 
