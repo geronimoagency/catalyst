@@ -26,7 +26,7 @@ import {
   DEPLOYER_ADDRESS
 } from '../Environment'
 import { statusResponseFromComponents } from '../logic/status-checks'
-import { ContentItem, RawContent } from '../ports/contentStorage/contentStorage'
+import { ContentItem } from '../ports/contentStorage/contentStorage'
 import { getDeployments } from '../service/deployments/deployments'
 import { DeploymentOptions } from '../service/deployments/types'
 import { getPointerChanges } from '../service/pointers/pointers'
@@ -151,12 +151,13 @@ export class Controller {
 
     const parsedUrn = await isUrnPrefixValid(collectionUrn)
     if (!parsedUrn) {
-      return res
+      res
         .status(400)
         .send({
           errors: `Invalid collection urn param, it should be a valid urn prefix of a 3rd party collection, instead: '${collectionUrn}'`
         })
         .end()
+      return
     }
 
     const entities: { pointer: string; entityId: EntityId }[] = await this.components.activeEntities.withPrefix(
@@ -266,9 +267,7 @@ export class Controller {
     const contentItem: ContentItem | undefined = await this.components.deployer.getContent(hashId)
 
     if (contentItem) {
-      const rawStream = await contentItem.asRawStream()
-      await setContentFileHeaders(rawStream, hashId, res)
-      destroy(rawStream.stream)
+      await setContentFileHeaders(contentItem, hashId, res)
       res.send()
     } else {
       res.status(404).send()
@@ -283,14 +282,14 @@ export class Controller {
     const contentItem: ContentItem | undefined = await this.components.deployer.getContent(hashId)
 
     if (contentItem) {
-      const rawStream = await contentItem.asRawStream()
-      await setContentFileHeaders(rawStream, hashId, res)
+      await setContentFileHeaders(contentItem, hashId, res)
 
-      const { stream } = rawStream
-      stream.pipe(res)
+      const rawStream = await contentItem.asRawStream()
+
+      rawStream.pipe(res)
 
       // Note: for context about why this is necessary, check https://github.com/nodejs/node/issues/1180
-      onFinished(res, () => destroy(stream))
+      onFinished(res, () => destroy(rawStream))
     } else {
       res.status(404).send()
     }
@@ -700,7 +699,7 @@ export class Controller {
   }
 }
 
-async function setContentFileHeaders(content: RawContent, hashId: string, res: express.Response) {
+async function setContentFileHeaders(content: ContentItem, hashId: string, res: express.Response) {
   res.contentType('application/octet-stream')
   res.setHeader('ETag', JSON.stringify(hashId)) // by spec, the ETag must be a double-quoted string
   res.setHeader('Access-Control-Expose-Headers', 'ETag')

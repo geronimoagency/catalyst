@@ -1,6 +1,6 @@
 import { DECENTRALAND_ADDRESS } from '@dcl/catalyst-node-commons'
+import { ILoggerComponent } from '@well-known-components/interfaces'
 import { EntityType, EntityVersion } from 'dcl-catalyst-commons'
-import log4js from 'log4js'
 import ms from 'ms'
 import { initComponentsWithEnv } from './components'
 import { RepositoryQueue } from './repository/RepositoryQueue'
@@ -52,7 +52,6 @@ export const DEFAULT_DATABASE_CONFIG = {
 const DEFAULT_SYNC_STREAM_TIMEOUT = '10m'
 export const DEPLOYER_ADDRESS = process.env.DEPLOYER_ADDRESS ?? null
 export class Environment {
-  private static readonly LOGGER = log4js.getLogger('Environment')
   private configs: Map<EnvironmentConfig, any>
 
   constructor(otherEnv?: Environment) {
@@ -68,12 +67,12 @@ export class Environment {
     return this
   }
 
-  logConfigValues() {
-    Environment.LOGGER.info('These are the configuration values:')
+  logConfigValues(logger: ILoggerComponent.ILogger): void {
+    logger.info('These are the configuration values:')
     const sensitiveEnvs = [EnvironmentConfig.PSQL_PASSWORD, EnvironmentConfig.PSQL_USER]
     for (const [config, value] of this.configs.entries()) {
       if (!sensitiveEnvs.includes(config)) {
-        Environment.LOGGER.info(`${EnvironmentConfig[config]}: ${this.printObject(value)}`)
+        logger.info(`${EnvironmentConfig[config]}: ${this.printObject(value)}`)
       }
     }
   }
@@ -112,7 +111,6 @@ export enum EnvironmentConfig {
   COLLECTIONS_L1_SUBGRAPH_URL,
   COLLECTIONS_L2_SUBGRAPH_URL,
   THIRD_PARTY_REGISTRY_L2_SUBGRAPH_URL,
-  PROOF_OF_WORK,
   PSQL_PASSWORD,
   PSQL_USER,
   PSQL_DATABASE,
@@ -165,6 +163,10 @@ export class EnvironmentBuilder {
   }
 
   async buildConfigAndComponents(): Promise<AppComponents> {
+    return await initComponentsWithEnv(await this.build())
+  }
+
+  async build(): Promise<Environment> {
     const env = new Environment()
 
     this.registerConfigIfNotAlreadySet(
@@ -302,7 +304,6 @@ export class EnvironmentBuilder {
           ? DEFAULT_BLOCKS_SUBGRAPH_MATIC_MAINNET
           : DEFAULT_BLOCKS_SUBGRAPH_MATIC_MUMBAI)
     )
-    this.registerConfigIfNotAlreadySet(env, EnvironmentConfig.PROOF_OF_WORK, () => process.env.PROOF_OF_WORK === 'true')
     this.registerConfigIfNotAlreadySet(
       env,
       EnvironmentConfig.PSQL_PASSWORD,
@@ -345,7 +346,7 @@ export class EnvironmentBuilder {
       process.env.PG_IDLE_TIMEOUT ? ms(process.env.PG_IDLE_TIMEOUT) : ms('30s')
     )
     this.registerConfigIfNotAlreadySet(env, EnvironmentConfig.PG_QUERY_TIMEOUT, () =>
-      process.env.PG_QUERY_TIMEOUT ? ms(process.env.PG_QUERY_TIMEOUT) : ms('180s')
+      process.env.PG_QUERY_TIMEOUT ? ms(process.env.PG_QUERY_TIMEOUT) : ms('5m')
     )
     this.registerConfigIfNotAlreadySet(
       env,
@@ -436,7 +437,7 @@ export class EnvironmentBuilder {
       () => process.env.RETRY_FAILED_DEPLOYMENTS_DELAY_TIME ?? ms('15m')
     )
 
-    return await initComponentsWithEnv(env)
+    return env
   }
 
   private registerConfigIfNotAlreadySet(env: Environment, key: EnvironmentConfig, valueProvider: () => any): void {
