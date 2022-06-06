@@ -341,6 +341,13 @@
     dcl-crypto "2.3.0"
     web3x "4.0.6"
 
+"@dcl/catalyst-contracts@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@dcl/catalyst-contracts/-/catalyst-contracts-2.0.0.tgz#0cd74e13e625e3b39f834a9bb81f290196ef0c19"
+  integrity sha512-5DIrA4J3W5qknfdHCx66zuc5SYo0+a4CD3qZLFqU4IzfvbYUsR9r3RBXdAja9orqNVRg5yDo5X3lFT7B4FB8UA==
+  dependencies:
+    eth-connect "^6.0.2"
+
 "@dcl/catalyst-node-commons@1.0.4":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@dcl/catalyst-node-commons/-/catalyst-node-commons-1.0.4.tgz#4f806ca49b5a12683fbe07130d2a525825ea5073"
@@ -393,12 +400,21 @@
   dependencies:
     ajv "^7.1.0"
 
-"@dcl/schemas@4.8.0", "@dcl/schemas@^4.0.0":
+"@dcl/schemas@4.8.0":
   version "4.8.0"
   resolved "https://registry.yarnpkg.com/@dcl/schemas/-/schemas-4.8.0.tgz#5f9ac0857c396b1bddfdcb3924c79a9b68e0f634"
   integrity sha512-NLvu90JSAunwA6vVYfVcdvlwO2x5fTc2tPhsko5kFfBEIp7lCzwSy6DoSlee/t92Uw9zIyNIS9Ai3ewLQ0T4zQ==
   dependencies:
     ajv "^7.1.0"
+
+"@dcl/schemas@^4.14.0":
+  version "4.14.1"
+  resolved "https://registry.yarnpkg.com/@dcl/schemas/-/schemas-4.14.1.tgz#be50ac93d2668e51cd3d92aee68fd9aefb1d405d"
+  integrity sha512-c0mD4hrFZs+fEweaag3J0VlPRSasTMUbxn9Oj/vZUe8oO8KzObvxpXH2eCkPosX5pu1TqdIAUsOEouDghUmzlA==
+  dependencies:
+    ajv "^7.1.0"
+    ajv-errors "^2.0.1"
+    ajv-keywords "^4.0.1"
 
 "@dcl/snapshots-fetcher@3.0.2":
   version "3.0.2"
@@ -2127,6 +2143,16 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
+ajv-errors@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/ajv-errors/-/ajv-errors-2.0.1.tgz#af5a199a0de65e6c5be738e108ad480578898a9f"
+  integrity sha512-hGH2npS6nUdBr61gf3rcG8R04DwwgQsdt6goZGmaZHYRHtLF948Emsdta/bcP9AD6/X1jnHm9lMbgujOQG7W6A==
+
+ajv-keywords@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/ajv-keywords/-/ajv-keywords-4.0.1.tgz#3fcd1988846b741ec958b2555c96ccecce2b3a59"
+  integrity sha512-vPmwZT6AL4R7kKrjKOMoKgnompJJS8MUgTB7dPBEknSSv4ahKgu046H+bGOH2eMRbAcz5pYz3fwaSwrCGNvuxA==
+
 ajv@^6.10.0, ajv@^6.12.3, ajv@^6.12.4, ajv@^6.12.6:
   version "6.12.6"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.12.6.tgz#baf5a62e802b07d977034586f8c3baf5adf26df4"
@@ -3172,17 +3198,17 @@ date-format@^4.0.9:
   resolved "https://registry.yarnpkg.com/date-format/-/date-format-4.0.9.tgz#4788015ac56dedebe83b03bc361f00c1ddcf1923"
   integrity sha512-+8J+BOUpSrlKLQLeF8xJJVTxS8QfRSuJgwxSVvslzgO3E6khbI0F5mMEPf5mTYhCCm4h99knYP6H3W9n3BQFrg==
 
-dcl-catalyst-client@^11.3.0:
-  version "11.3.0"
-  resolved "https://registry.yarnpkg.com/dcl-catalyst-client/-/dcl-catalyst-client-11.3.0.tgz#4709b1b3950bd2384736b1b9d86d46e2c2724815"
-  integrity sha512-1332euZ2lrwpyuinxZhT8kfoAYgYvQ12oxBdU59NZ7jE7hLD8DlC/LKv2h16lFqgQX/RCQrVMngaK5+z+3i1sg==
+dcl-catalyst-client@^12.0.1:
+  version "12.0.1"
+  resolved "https://registry.yarnpkg.com/dcl-catalyst-client/-/dcl-catalyst-client-12.0.1.tgz#034f38af44b1323906f2da4cfa21f79cb1f3ef34"
+  integrity sha512-hvIoHvKrTGP5r8VUnKwgV9I9zDUr47nL/nrQR34U4hHhfXnszKaGXIFbmEZZ9cuZmH5CfbtdchtBRSoJ8g/qfw==
   dependencies:
-    "@dcl/hashing" "^1.0.0"
-    "@dcl/schemas" "^4.0.0"
+    "@dcl/catalyst-contracts" "^2.0.0"
+    "@dcl/hashing" "^1.1.0"
+    "@dcl/schemas" "^4.14.0"
     "@types/form-data" "^2.5.0"
     cookie "^0.4.1"
-    dcl-catalyst-commons "^8.2.0"
-    dcl-crypto "^2.2.0"
+    dcl-catalyst-commons "^9.0.0"
     form-data "^4.0.0"
 
 dcl-catalyst-commons@8.2.0:
@@ -3200,7 +3226,7 @@ dcl-catalyst-commons@8.2.0:
     ms "^2.1.2"
     node-fetch "^3.0.0"
 
-dcl-catalyst-commons@^8.2.0, dcl-catalyst-commons@^8.2.1:
+dcl-catalyst-commons@^8.2.1:
   version "8.2.1"
   resolved "https://registry.yarnpkg.com/dcl-catalyst-commons/-/dcl-catalyst-commons-8.2.1.tgz#4abe13d2d2a1c360e666930f048d91a1e74f9872"
   integrity sha512-C9wu8lHox+f1DbsJ0T6izupftmYnvpsRDh/DcTUONOUasLtkzbirlmYZYG8LksVY5VdSGIUuyfp+9WWprLmsSw==
@@ -3215,7 +3241,18 @@ dcl-catalyst-commons@^8.2.0, dcl-catalyst-commons@^8.2.1:
     ms "^2.1.2"
     node-fetch "^3.0.0"
 
-dcl-crypto@2.3.0, dcl-crypto@^2.1.0, dcl-crypto@^2.2.0:
+dcl-catalyst-commons@^9.0.0:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/dcl-catalyst-commons/-/dcl-catalyst-commons-9.0.1.tgz#315ef14f774dcdb6f07147865a967ca0b25648e7"
+  integrity sha512-9BfHnGR9YHe/FkqVKgpBwXMjwI53DtuPn1kBWFyStI4I/F0W2/iG/LzoHLcHB1gzvj3JHaSK+Du0o9HWHIMPiQ==
+  dependencies:
+    "@dcl/schemas" "^4.14.0"
+    abort-controller "^3.0.0"
+    cookie "^0.4.1"
+    cross-fetch "^3.1.4"
+    ms "^2.1.2"
+
+dcl-crypto@2.3.0, dcl-crypto@^2.1.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/dcl-crypto/-/dcl-crypto-2.3.0.tgz#a223b1513888a359ff93b302b0d5a045edff5a79"
   integrity sha512-ypsd4XjSWaOj0DtESxpnY+YYQBy43c/uUrNRaVnWGiJehQc+3EC7nONnCy3p8XcLspGAwtes7nwWtRnsNKFvVQ==
@@ -3757,6 +3794,11 @@ etag@~1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=
+
+eth-connect@^6.0.2:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/eth-connect/-/eth-connect-6.0.3.tgz#dd903bea5a75083ebb010216549e427f2db90fce"
+  integrity sha512-jK+zqIhMuZe6RlHkEKOXSZDKgZQw/mPTLlysdFYQsxaJlZtaB1EQSTgY/DrHhOc2wUUmB97raAftmhC8Wk/o7Q==
 
 eth-crypto@2.3.0:
   version "2.3.0"
