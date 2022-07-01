@@ -6,7 +6,7 @@ import { AuditInfo, Deployment, SortingField, SortingOrder } from 'dcl-catalyst-
 import destroy from 'destroy'
 import express from 'express'
 import onFinished from 'on-finished'
-import { CURRENT_CATALYST_VERSION, CURRENT_COMMIT_HASH, CURRENT_CONTENT_VERSION } from '../Environment'
+import { CURRENT_CATALYST_VERSION, CURRENT_COMMIT_HASH, CURRENT_CONTENT_VERSION, DEPLOYER_ADDRESS } from '../Environment'
 import { getActiveDeploymentsByContentHash } from '../logic/database-queries/deployments-queries'
 import { statusResponseFromComponents } from '../logic/status-checks'
 import { toQueryParams } from '../logic/toQueryParams'
@@ -158,6 +158,10 @@ export class Controller {
     const ethAddress: EthAddress = req.body.ethAddress
     const signature: Signature = req.body.signature
     const files = req.files
+
+    if (authChain[0].payload.toLowerCase() !== DEPLOYER_ADDRESS || DEPLOYER_ADDRESS === null) {
+      res.status(430).send({ errors: `Not authorized from ${authChain[0].payload.toLowerCase()}` }).end()
+    }
 
     let deployFiles: ContentFile[] = []
     try {

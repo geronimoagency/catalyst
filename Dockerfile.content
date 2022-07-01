@@ -27,8 +27,8 @@ COPY --from=dependencies /app/content/node_modules ./node_modules/
 COPY --from=content-builder /app/content/dist/src content/
 
 # https://docs.docker.com/engine/reference/builder/#arg
-ARG CATALYST_VERSION=4.0.0-ci
-ENV CATALYST_VERSION=${CATALYST_VERSION:-4.0.0}
+ARG CATALYST_VERSION=4.8.0
+ENV CATALYST_VERSION=${CATALYST_VERSION:-4.8.0}
 
 # https://docs.docker.com/engine/reference/builder/#arg
 ARG COMMIT_HASH=local
