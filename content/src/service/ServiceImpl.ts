@@ -231,17 +231,17 @@ export class ServiceImpl implements MetaverseContentService {
     const deployedEntity = await this.getEntityById(entityId)
     const isEntityAlreadyDeployed = !!deployedEntity
 
-    const validationResult = await this.validateDeployment(entity, context, isEntityAlreadyDeployed, auditInfo, hashes)
+    await this.validateDeployment(entity, context, isEntityAlreadyDeployed, auditInfo, hashes)
 
-    if (!validationResult.ok) {
-      ServiceImpl.LOGGER.warn(`Validations for deployment failed`, {
-        entityId,
-        errors: validationResult.errors?.join(',') ?? ''
-      })
-      return {
-        errors: validationResult.errors ?? ['The validateDeployment was not successful but it did not return any error']
-      }
-    }
+    // if (!validationResult.ok) {
+    //   ServiceImpl.LOGGER.warn(`Validations for deployment failed`, {
+    //     entityId,
+    //     errors: validationResult.errors?.join(',') ?? ''
+    //   })
+    //   return {
+    //     errors: validationResult.errors ?? ['The validateDeployment was not successful but it did not return any error']
+    //   }
+    // }
 
     if (entity.version !== 'v3')
       return {
