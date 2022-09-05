@@ -380,10 +380,10 @@
     ajv-errors "^2.0.1"
     ajv-keywords "^4.0.1"
 
-"@dcl/schemas@^5.0.3":
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/@dcl/schemas/-/schemas-5.0.3.tgz#aba986dae25423ce36d7b87f0280dd2923b58818"
-  integrity sha512-FvG9jNBXLj+08RltM98LA0BTw7nSQtzwlghy1DqaqspoT7LhxDol7uWP/CZ1RuyT0x4KnN0E9VYnS9hVAtMi+Q==
+"@dcl/schemas@^5.0.3", "@dcl/schemas@^5.14.0":
+  version "5.14.0"
+  resolved "https://registry.yarnpkg.com/@dcl/schemas/-/schemas-5.14.0.tgz#efcf45b8f8ef04f221d27d16a447bce40615107d"
+  integrity sha512-UKIny4sxoYpKwRItM7mEzFyM7+R2kwqV8PB7DBo30PCkoFBL3N6b85K/hGk9qd+ZNTioFy6ceL8y7bKeASWUHw==
   dependencies:
     ajv "^8.11.0"
     ajv-errors "^3.0.0"
