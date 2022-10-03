@@ -339,16 +339,16 @@
   dependencies:
     ethers "^5.6.8"
 
-"@dcl/content-validator@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@dcl/content-validator/-/content-validator-2.2.0.tgz#8abacdca79e9b329e3838520b9557becd93fcee0"
-  integrity sha512-DfQ7QOybUTnDVvkUa3Q4Z43+AbPKxRqLbXUIqAontEqr+UXnnP1lS/C+QsPM/65N/N6A8oFjTyS5ShomAnMnqQ==
+"@dcl/content-validator@^4.0.11":
+  version "4.0.11"
+  resolved "https://registry.yarnpkg.com/@dcl/content-validator/-/content-validator-4.0.11.tgz#47bffb680401a732550aec240efefd824f16254a"
+  integrity sha512-MEftzc50ypuCacnNP95+VLb0OVuR4AFg3rpQJcHsVrYOXeEgQ1mgUHpmR8iKuTLPcFEEXe7D1wwwPjrFLBEUqg==
   dependencies:
     "@dcl/content-hash-tree" "^1.1.3"
     "@dcl/hashing" "1.1.0"
-    "@dcl/schemas" "^5.0.3"
-    "@dcl/urn-resolver" "1.3.1"
-    "@well-known-components/interfaces" "1.1.1"
+    "@dcl/schemas" "^5.4.2"
+    "@dcl/urn-resolver" "2.0.2"
+    "@well-known-components/interfaces" "1.1.2"
     "@well-known-components/thegraph-component" "^1.2.0"
     ms "2.1.3"
     sharp "^0.30.6"
@@ -380,10 +380,10 @@
     ajv-errors "^2.0.1"
     ajv-keywords "^4.0.1"
 
-"@dcl/schemas@^5.0.3":
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/@dcl/schemas/-/schemas-5.0.3.tgz#aba986dae25423ce36d7b87f0280dd2923b58818"
-  integrity sha512-FvG9jNBXLj+08RltM98LA0BTw7nSQtzwlghy1DqaqspoT7LhxDol7uWP/CZ1RuyT0x4KnN0E9VYnS9hVAtMi+Q==
+"@dcl/schemas@^5.4.2":
+  version "5.19.0"
+  resolved "https://registry.yarnpkg.com/@dcl/schemas/-/schemas-5.19.0.tgz#c1311bc18ab4f20cd6b1365c6e42b382f290e787"
+  integrity sha512-eJkZu7oNgZ5rGSi6BzxUBe/IHYKf0mtP+DYkDUFyTmN7Xk81AQy7CXQoT6ME8Qc8A0fT2LfM08sunMJbO5IGqg==
   dependencies:
     ajv "^8.11.0"
     ajv-errors "^3.0.0"
@@ -403,6 +403,11 @@
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/@dcl/urn-resolver/-/urn-resolver-1.3.1.tgz#fa1a036f562c2e2fe12ee44a8b0465b62d7e9ef5"
   integrity sha512-I/ktPcHjAMsJcGL3tsFcNZ4SjZ9UEVEfLue9ys5Ci2S/J/DE5zUPijBc2AFOvAT1sV/4WtF57SNDxMAvwPRNNQ==
+
+"@dcl/urn-resolver@2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@dcl/urn-resolver/-/urn-resolver-2.0.2.tgz#d2c416a9131e3d901f6b85828330502ee041ba1c"
+  integrity sha512-o2jAizoyZ74/lP+XYmENeAnKEw2sSudSWOhDnR4ESa++7eFJhlDSyPAWAfptSEfpWGY7GmgNUMMkXq8E6GLebA==
 
 "@eslint/eslintrc@^1.2.2":
   version "1.2.2"
@@ -1596,10 +1601,19 @@
     on-finished "^2.3.0"
     path-to-regexp "^6.2.0"
 
-"@well-known-components/interfaces@1.1.1", "@well-known-components/interfaces@^1.1.0":
+"@well-known-components/interfaces@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@well-known-components/interfaces/-/interfaces-1.1.1.tgz#d7e6552dd9ebee9ff9a2c9b5e1a88fc8247eb106"
   integrity sha512-LCIBhzHvxXhT/uXrMXuvfWsIcHmK9lQ65StVMOgkPRqzo29X3U4crUB/dy2wFYITE5WnLUk/d25tpOKvvOlUeA==
+  dependencies:
+    "@types/node" "^16.11.19"
+    "@types/node-fetch" "^2.5.12"
+    typed-url-params "^1.0.1"
+
+"@well-known-components/interfaces@1.1.2", "@well-known-components/interfaces@^1.1.0":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@well-known-components/interfaces/-/interfaces-1.1.2.tgz#754ad83ffd434a63d57773be69177bce9869c554"
+  integrity sha512-hLqjVXZPHObloSbscauQWP9LI1r0jqW/kGlpJ+cZxEOhclvG4ot0JIiu4YeK436YgbjRYJxsGOkJGl37RLvKOg==
   dependencies:
     "@types/node" "^16.11.19"
     "@types/node-fetch" "^2.5.12"
@@ -1617,15 +1631,7 @@
   dependencies:
     prom-client "^14.0.1"
 
-"@well-known-components/thegraph-component@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@well-known-components/thegraph-component/-/thegraph-component-1.1.0.tgz#5e4c9faa5cec76334b0b1a951becdb27b936255a"
-  integrity sha512-I+O4gMQzQzd5dh8P7qMzpNiY2NVFtCzXbdEhLn6vFjXnz1Zq9YXerwIC4cHefnR+5VcfNeJvLwh8MYJnzwpjtA==
-  dependencies:
-    "@well-known-components/http-server" "^1.1.0"
-    "@well-known-components/interfaces" "^1.1.0"
-
-"@well-known-components/thegraph-component@^1.2.0":
+"@well-known-components/thegraph-component@^1.1.0", "@well-known-components/thegraph-component@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@well-known-components/thegraph-component/-/thegraph-component-1.2.0.tgz#bb24e7b1572a10734fdfaac57892a71320de404f"
   integrity sha512-fi+9oc+4pWaLXc0axFJfVVJO/j28D8/VlDbUuXg3351p2KHsAfs65pYnaHZNfCyw+OhOgBsmUTdJFucB3PAAZQ==
