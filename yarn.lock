@@ -318,6 +318,16 @@
   dependencies:
     "@cspotcode/source-map-consumer" "0.8.0"
 
+"@dcl/block-indexer@^1.1.1":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@dcl/block-indexer/-/block-indexer-1.1.2.tgz#da990cff837d33a556f6d7c734b678b86f01dc03"
+  integrity sha512-IHUkRRkJ4PH07monqf8zqKPvbei+SsMNW205RjqYhVN2Pg5sQFAB9Laj06eDuB1KGd8TNbkoPAXaZ9Rghqw7IA==
+  dependencies:
+    "@well-known-components/interfaces" "^1.1.3"
+    "@well-known-components/logger" "^3.0.0"
+    "@well-known-components/metrics" "^2.0.1"
+    lru-cache "^7.14.0"
+
 "@dcl/catalyst-api-specs@1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@dcl/catalyst-api-specs/-/catalyst-api-specs-1.2.2.tgz#ad79bbce410737b92a03b059e5160077abebb3dc"
@@ -332,26 +342,28 @@
   dependencies:
     eth-connect "^6.0.2"
 
-"@dcl/content-hash-tree@^1.1.3":
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/@dcl/content-hash-tree/-/content-hash-tree-1.1.3.tgz#54ab74ab06d496cbe301fb47e3d39d664c20746a"
-  integrity sha512-oxwBwlnmzRD+2C2WgGZjnL2DSMxet+3FHKBQyXOXabhK18+HJPvjScHCVzLZRz6rUlk/CHR3SghLaeXVFEa5Ow==
+"@dcl/content-hash-tree@^1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@dcl/content-hash-tree/-/content-hash-tree-1.1.4.tgz#4cf6f06a79959199b9a02dc1e870b946ba8329b2"
+  integrity sha512-xa9uSIkVOUHV2pkJMaTdmXI7cedbUMuxQbbp6p5tU/WViMbeGW065BkFbM64iGmbfpynLEYZwNsGocBB1o0o9g==
   dependencies:
     ethers "^5.6.8"
 
-"@dcl/content-validator@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@dcl/content-validator/-/content-validator-2.2.0.tgz#8abacdca79e9b329e3838520b9557becd93fcee0"
-  integrity sha512-DfQ7QOybUTnDVvkUa3Q4Z43+AbPKxRqLbXUIqAontEqr+UXnnP1lS/C+QsPM/65N/N6A8oFjTyS5ShomAnMnqQ==
+"@dcl/content-validator@^4.7.9":
+  version "4.7.9"
+  resolved "https://registry.yarnpkg.com/@dcl/content-validator/-/content-validator-4.7.9.tgz#267fc9e633340e85a9ed9a2511595cc7ae0e4123"
+  integrity sha512-3VzVm/0nrrZwVTmbE64/5Z8J8Rp1OHfKUCFKW5ULMbaF6KXYFs0wP7/7dVN+6ubk7VukXQLUZ+j6c/133vwlug==
   dependencies:
-    "@dcl/content-hash-tree" "^1.1.3"
-    "@dcl/hashing" "1.1.0"
-    "@dcl/schemas" "^5.0.3"
-    "@dcl/urn-resolver" "1.3.1"
-    "@well-known-components/interfaces" "1.1.1"
-    "@well-known-components/thegraph-component" "^1.2.0"
-    ms "2.1.3"
-    sharp "^0.30.6"
+    "@dcl/block-indexer" "^1.1.1"
+    "@dcl/content-hash-tree" "^1.1.4"
+    "@dcl/hashing" "^2.0.0"
+    "@dcl/schemas" "^7.0.0"
+    "@dcl/urn-resolver" "^2.0.3"
+    "@well-known-components/interfaces" "^1.3.0"
+    "@well-known-components/thegraph-component" "^1.5.0"
+    ms "^2.1.3"
+    p-queue "^6.6.2"
+    sharp "^0.32.0"
 
 "@dcl/crypto@^3.0.1":
   version "3.0.1"
@@ -362,10 +374,19 @@
     eth-connect "^6.0.3"
     ethereum-cryptography "^1.0.3"
 
-"@dcl/hashing@1.1.0", "@dcl/hashing@^1.0.0", "@dcl/hashing@^1.1.0":
+"@dcl/hashing@^1.0.0", "@dcl/hashing@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@dcl/hashing/-/hashing-1.1.0.tgz#8992beeeb07b7cab9b683895399bcaf8ead32869"
   integrity sha512-u20iZwIT9YBLkoxO2rHw53zm2ePagFvJ2lChclN2wxlZoL04SlAucu3njsOSYcgPBMRrmMqHk3cbxVuP70aBbA==
+  dependencies:
+    ethereum-cryptography "^1.0.3"
+    ipfs-unixfs-importer "^7.0.3"
+    multiformats "^9.6.3"
+
+"@dcl/hashing@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@dcl/hashing/-/hashing-2.0.0.tgz#3b9fdf797d2f3f928b037db404b06be12a2cc562"
+  integrity sha512-Wver/KQScNhoobAOT9u09THMReCIkuK2VQ2GtB891uHKYh31IxCYJW+dcBkynWUZQA4HTRa3DOtEDt/ZyImaHQ==
   dependencies:
     ethereum-cryptography "^1.0.3"
     ipfs-unixfs-importer "^7.0.3"
@@ -380,10 +401,10 @@
     ajv-errors "^2.0.1"
     ajv-keywords "^4.0.1"
 
-"@dcl/schemas@^5.0.3":
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/@dcl/schemas/-/schemas-5.0.3.tgz#aba986dae25423ce36d7b87f0280dd2923b58818"
-  integrity sha512-FvG9jNBXLj+08RltM98LA0BTw7nSQtzwlghy1DqaqspoT7LhxDol7uWP/CZ1RuyT0x4KnN0E9VYnS9hVAtMi+Q==
+"@dcl/schemas@^7.0.0":
+  version "7.4.1"
+  resolved "https://registry.yarnpkg.com/@dcl/schemas/-/schemas-7.4.1.tgz#f2209e7be165ec445bc428bfe35f7a236f5429ae"
+  integrity sha512-gYqhzU1q7+XpME+oF1HrzuVxM6fw+EvAN8M5HVwppyHOthy6ortNMOmMhspIQ8eXNAwGmwxKlBjUM2jh0qNy5Q==
   dependencies:
     ajv "^8.11.0"
     ajv-errors "^3.0.0"
@@ -403,6 +424,11 @@
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/@dcl/urn-resolver/-/urn-resolver-1.3.1.tgz#fa1a036f562c2e2fe12ee44a8b0465b62d7e9ef5"
   integrity sha512-I/ktPcHjAMsJcGL3tsFcNZ4SjZ9UEVEfLue9ys5Ci2S/J/DE5zUPijBc2AFOvAT1sV/4WtF57SNDxMAvwPRNNQ==
+
+"@dcl/urn-resolver@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@dcl/urn-resolver/-/urn-resolver-2.0.3.tgz#1ec62b8cc1ab4eeb6073c5f06bd4b163e52da89b"
+  integrity sha512-/DaBj2ijznphQrbMkDXCudFa/f6IWfefv+C7DJNB1064n+yuxoIdCmYpp0lKjXMfSVkbJDjFS5bVaAzXVb265w==
 
 "@eslint/eslintrc@^1.2.2":
   version "1.2.2"
@@ -1578,7 +1604,7 @@
   dependencies:
     dotenv "^8.2.0"
 
-"@well-known-components/http-server@1.1.2", "@well-known-components/http-server@^1.1.0":
+"@well-known-components/http-server@1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@well-known-components/http-server/-/http-server-1.1.2.tgz#39d038da07efd3c1a3bc9a7edab5418c8162910f"
   integrity sha512-kkx34LjUSt3jhRDKK09yzkIr8NLp6fnPHTJXkaO3EEv7a0ERnsSFIM0AQjfRBS4CG283b0EgbTUmQnxxaXRHrg==
@@ -1596,10 +1622,19 @@
     on-finished "^2.3.0"
     path-to-regexp "^6.2.0"
 
-"@well-known-components/interfaces@1.1.1", "@well-known-components/interfaces@^1.1.0":
+"@well-known-components/interfaces@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@well-known-components/interfaces/-/interfaces-1.1.1.tgz#d7e6552dd9ebee9ff9a2c9b5e1a88fc8247eb106"
   integrity sha512-LCIBhzHvxXhT/uXrMXuvfWsIcHmK9lQ65StVMOgkPRqzo29X3U4crUB/dy2wFYITE5WnLUk/d25tpOKvvOlUeA==
+  dependencies:
+    "@types/node" "^16.11.19"
+    "@types/node-fetch" "^2.5.12"
+    typed-url-params "^1.0.1"
+
+"@well-known-components/interfaces@^1.1.0", "@well-known-components/interfaces@^1.1.3", "@well-known-components/interfaces@^1.3.0":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@well-known-components/interfaces/-/interfaces-1.4.1.tgz#310119cd5d9f7f67c7914c49b4d43a105acacec5"
+  integrity sha512-eu4ndE32jF+qKAX/rQ8SFBWh7PCXsOPdArgPweOjK4pdLOyzJaAJaY67/LEerrIp/LNgKDGy0fYbbdZ76BQt1A==
   dependencies:
     "@types/node" "^16.11.19"
     "@types/node-fetch" "^2.5.12"
@@ -1610,6 +1645,11 @@
   resolved "https://registry.yarnpkg.com/@well-known-components/logger/-/logger-2.1.0.tgz#2d2e74be3275ccbcf31dbd0f8157c1f01c83a596"
   integrity sha512-PG8eL8aOD7CDp7N2I91d6f3jiFxrA/i0HQB7192GIIMvCULiwz2aIXYw0GfG5BD+TaFfvC/P7s5YcMAiiW3oLw==
 
+"@well-known-components/logger@^3.0.0":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@well-known-components/logger/-/logger-3.1.2.tgz#0644e7a25515235b7ffee4d6c1f0a34fd94b910e"
+  integrity sha512-nT2ULsvtxcaehnUPcmRfVWIspVq6iYTPTzs5D9lBxqE3Pt+j5StzPfo814IqSo4xhN9cJhJAQ/EggMmKuYMaZg==
+
 "@well-known-components/metrics@1.1.3", "@well-known-components/metrics@^1.1.2":
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@well-known-components/metrics/-/metrics-1.1.3.tgz#f57041a940b87675e716c38a0acf3d9410501b75"
@@ -1617,21 +1657,19 @@
   dependencies:
     prom-client "^14.0.1"
 
-"@well-known-components/thegraph-component@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@well-known-components/thegraph-component/-/thegraph-component-1.1.0.tgz#5e4c9faa5cec76334b0b1a951becdb27b936255a"
-  integrity sha512-I+O4gMQzQzd5dh8P7qMzpNiY2NVFtCzXbdEhLn6vFjXnz1Zq9YXerwIC4cHefnR+5VcfNeJvLwh8MYJnzwpjtA==
+"@well-known-components/metrics@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@well-known-components/metrics/-/metrics-2.0.1.tgz#b5f5410c3ba6e5658ef80926a1f7bd81d7aa1f56"
+  integrity sha512-jgT9TuxVS9GzVMMYWXNJRM2qXvexuf4xfrFNBYa3w+gqEWCK4Id5R4zBee/bm6/F5yIPauAWxbOS6KNNDBIrGw==
   dependencies:
-    "@well-known-components/http-server" "^1.1.0"
-    "@well-known-components/interfaces" "^1.1.0"
+    prom-client "^14.1.0"
 
-"@well-known-components/thegraph-component@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@well-known-components/thegraph-component/-/thegraph-component-1.2.0.tgz#bb24e7b1572a10734fdfaac57892a71320de404f"
-  integrity sha512-fi+9oc+4pWaLXc0axFJfVVJO/j28D8/VlDbUuXg3351p2KHsAfs65pYnaHZNfCyw+OhOgBsmUTdJFucB3PAAZQ==
+"@well-known-components/thegraph-component@^1.1.0", "@well-known-components/thegraph-component@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@well-known-components/thegraph-component/-/thegraph-component-1.5.0.tgz#8ee9f6d89dc0b5a0bf66019372103fbdae43037d"
+  integrity sha512-kOqW8Ums9XzwFCXD6TZUtoRIGFVPhnhuXM7hXxw/RvaUnRRiFN7xT47kvxWIRkvKv8l0ZGp24qLt8qBau5pAoQ==
   dependencies:
-    "@well-known-components/http-server" "^1.1.0"
-    "@well-known-components/interfaces" "^1.1.0"
+    "@well-known-components/interfaces" "^1.3.0"
 
 abab@^2.0.3, abab@^2.0.5:
   version "2.0.6"
@@ -4713,6 +4751,11 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
+lru-cache@^7.14.0:
+  version "7.18.3"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.18.3.tgz#f793896e0fd0e954a59dfdd82f0773808df6aa89"
+  integrity sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==
+
 make-dir@^3.0.0, make-dir@^3.0.2:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-3.1.0.tgz#415e967046b3a7f1d185277d84aa58203726a13f"
@@ -4864,7 +4907,7 @@ ms@2.1.2:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-ms@2.1.3, ms@^2.1.2:
+ms@2.1.3, ms@^2.1.2, ms@^2.1.3:
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
@@ -4972,10 +5015,10 @@ node-addon-api@^4.3.0:
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-4.3.0.tgz#52a1a0b475193e0928e98e0426a0d1254782b77f"
   integrity sha512-73sE9+3UaLYYFmDsFZnqCInzPyh3MqIwZO9cw58yIqAZhONrrabrYyYe3TuIqtIiOuTXVhsGau8hcrhhwSsDIQ==
 
-node-addon-api@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-5.0.0.tgz#7d7e6f9ef89043befdb20c1989c905ebde18c501"
-  integrity sha512-CvkDw2OEnme7ybCykJpVcKH+uAOLV2qLqiyla128dN9TkEWfrYmxG6C2boDe5KcNQqZF3orkqzGgOMvZ/JNekA==
+node-addon-api@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-6.1.0.tgz#ac8470034e58e67d0c6f1204a18ae6995d9c0d76"
+  integrity sha512-+eawOlIgy680F0kBzPUNFhMZGtJ1YmqM6l4+Crf4IkImjYrO/mqPwRMh352g23uIaQKFItcQ64I7KMaJxHgAVA==
 
 node-cache@^5.1.2:
   version "5.1.2"
@@ -5434,7 +5477,7 @@ postgres-interval@^1.1.0:
   dependencies:
     xtend "^4.0.0"
 
-prebuild-install@^7.0.1, prebuild-install@^7.1.0:
+prebuild-install@^7.0.1:
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/prebuild-install/-/prebuild-install-7.1.0.tgz#991b6ac16c81591ba40a6d5de93fb33673ac1370"
   integrity sha512-CNcMgI1xBypOyGqjp3wOc8AAo1nMhZS3Cwd3iHIxOdAUbb+YxdNuM4Z5iIrZ8RLvOsf3F3bl7b7xGq6DjQoNYA==
@@ -5447,6 +5490,24 @@ prebuild-install@^7.0.1, prebuild-install@^7.1.0:
     napi-build-utils "^1.0.1"
     node-abi "^3.3.0"
     npmlog "^4.0.1"
+    pump "^3.0.0"
+    rc "^1.2.7"
+    simple-get "^4.0.0"
+    tar-fs "^2.0.0"
+    tunnel-agent "^0.6.0"
+
+prebuild-install@^7.1.1:
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/prebuild-install/-/prebuild-install-7.1.1.tgz#de97d5b34a70a0c81334fd24641f2a1702352e45"
+  integrity sha512-jAXscXWMcCK8GgCoHOfIr0ODh5ai8mj63L2nWrjuAgXE6tDyYGnx4/8o/rCgU+B4JSyZBKbeZqzhtwtC3ovxjw==
+  dependencies:
+    detect-libc "^2.0.0"
+    expand-template "^2.0.3"
+    github-from-package "0.0.0"
+    minimist "^1.2.3"
+    mkdirp-classic "^0.5.3"
+    napi-build-utils "^1.0.1"
+    node-abi "^3.3.0"
     pump "^3.0.0"
     rc "^1.2.7"
     simple-get "^4.0.0"
@@ -5500,6 +5561,13 @@ prom-client@^14.0.1:
   version "14.0.1"
   resolved "https://registry.yarnpkg.com/prom-client/-/prom-client-14.0.1.tgz#bdd9583e02ec95429677c0e013712d42ef1f86a8"
   integrity sha512-HxTArb6fkOntQHoRGvv4qd/BkorjliiuO2uSWC2KC17MUTKYttWdDoXX/vxOhQdkoECEM9BBH0pj2l8G8kev6w==
+  dependencies:
+    tdigest "^0.1.1"
+
+prom-client@^14.1.0:
+  version "14.2.0"
+  resolved "https://registry.yarnpkg.com/prom-client/-/prom-client-14.2.0.tgz#ca94504e64156f6506574c25fb1c34df7812cf11"
+  integrity sha512-sF308EhTenb/pDRPakm+WgiN+VdM/T1RaHj1x+MvAuT8UiQP8JmOEbxVqtkbfR4LrvOg5n7ic01kRBDGXjYikA==
   dependencies:
     tdigest "^0.1.1"
 
@@ -5802,6 +5870,13 @@ semver@^6.0.0, semver@^6.3.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
+semver@^7.5.0:
+  version "7.5.3"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.5.3.tgz#161ce8c2c6b4b3bdca6caadc9fa3317a4c4fe88e"
+  integrity sha512-QBlUtyVk/5EeHbi7X0fw6liDZc7BBmEaSYn01fMU1OUYbf6GPsbTtd8WmnqbI20SeycoHSeiybkE/q1Q+qlThQ==
+  dependencies:
+    lru-cache "^6.0.0"
+
 send@0.18.0:
   version "0.18.0"
   resolved "https://registry.yarnpkg.com/send/-/send-0.18.0.tgz#670167cc654b05f5aa4a767f9113bb371bc706be"
@@ -5855,16 +5930,16 @@ sharp@0.30.4:
     tar-fs "^2.1.1"
     tunnel-agent "^0.6.0"
 
-sharp@^0.30.6:
-  version "0.30.6"
-  resolved "https://registry.yarnpkg.com/sharp/-/sharp-0.30.6.tgz#02264e9826b5f1577509f70bb627716099778873"
-  integrity sha512-lSdVxFxcndzcXggDrak6ozdGJgmIgES9YVZWtAFrwi+a/H5vModaf51TghBtMPw+71sLxUsTy2j+aB7qLIODQg==
+sharp@^0.32.0:
+  version "0.32.1"
+  resolved "https://registry.yarnpkg.com/sharp/-/sharp-0.32.1.tgz#41aa0d0b2048b2e0ee453d9fcb14ec1f408390fe"
+  integrity sha512-kQTFtj7ldpUqSe8kDxoGLZc1rnMFU0AO2pqbX6pLy3b7Oj8ivJIdoKNwxHVQG2HN6XpHPJqCSM2nsma2gOXvOg==
   dependencies:
     color "^4.2.3"
     detect-libc "^2.0.1"
-    node-addon-api "^5.0.0"
-    prebuild-install "^7.1.0"
-    semver "^7.3.7"
+    node-addon-api "^6.1.0"
+    prebuild-install "^7.1.1"
+    semver "^7.5.0"
     simple-get "^4.0.1"
     tar-fs "^2.1.1"
     tunnel-agent "^0.6.0"
