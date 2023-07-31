@@ -1396,6 +1396,11 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.33.tgz#566713b1b626f781c5c58fe3531307283e00720c"
   integrity sha512-0PJ0vg+JyU0MIan58IOIFRtSvsb7Ri+7Wltx2qAg94eMOrpg4+uuP3aUHCpxXc1i0jCXiC+zIamSZh3l9AbcQA==
 
+"@types/node@^20.3.1":
+  version "20.4.5"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.4.5.tgz#9dc0a5cb1ccce4f7a731660935ab70b9c00a5d69"
+  integrity sha512-rt40Nk13II9JwQBdeYqmbn2Q6IVTA5uPhvSO+JVqdXw/6/4glI6oR9ezty/A9Hg5u7JH4OmYmuQ+XvjKm0Datg==
+
 "@types/on-finished@2.3.1":
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/@types/on-finished/-/on-finished-2.3.1.tgz#4537f9f2b47b3ba0b92c14a4bcc0f755aeda3484"
@@ -1578,7 +1583,7 @@
   dependencies:
     dotenv "^8.2.0"
 
-"@well-known-components/http-server@1.1.2", "@well-known-components/http-server@^1.1.0":
+"@well-known-components/http-server@1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@well-known-components/http-server/-/http-server-1.1.2.tgz#39d038da07efd3c1a3bc9a7edab5418c8162910f"
   integrity sha512-kkx34LjUSt3jhRDKK09yzkIr8NLp6fnPHTJXkaO3EEv7a0ERnsSFIM0AQjfRBS4CG283b0EgbTUmQnxxaXRHrg==
@@ -1596,12 +1601,21 @@
     on-finished "^2.3.0"
     path-to-regexp "^6.2.0"
 
-"@well-known-components/interfaces@1.1.1", "@well-known-components/interfaces@^1.1.0":
+"@well-known-components/interfaces@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@well-known-components/interfaces/-/interfaces-1.1.1.tgz#d7e6552dd9ebee9ff9a2c9b5e1a88fc8247eb106"
   integrity sha512-LCIBhzHvxXhT/uXrMXuvfWsIcHmK9lQ65StVMOgkPRqzo29X3U4crUB/dy2wFYITE5WnLUk/d25tpOKvvOlUeA==
   dependencies:
     "@types/node" "^16.11.19"
+    "@types/node-fetch" "^2.5.12"
+    typed-url-params "^1.0.1"
+
+"@well-known-components/interfaces@^1.1.0", "@well-known-components/interfaces@^1.4.2":
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/@well-known-components/interfaces/-/interfaces-1.4.2.tgz#e37eb296280abfcab14f0608b3bdfc84d5a21929"
+  integrity sha512-1tkr/OhZ4UmnQiST2svKznEiJ86crV2S+AIhokhowR4MexAKWgYlmZpoP6VIcgDVPf7nu8hOtIPMQaCZ+COC0A==
+  dependencies:
+    "@types/node" "^20.3.1"
     "@types/node-fetch" "^2.5.12"
     typed-url-params "^1.0.1"
 
@@ -1617,21 +1631,12 @@
   dependencies:
     prom-client "^14.0.1"
 
-"@well-known-components/thegraph-component@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@well-known-components/thegraph-component/-/thegraph-component-1.1.0.tgz#5e4c9faa5cec76334b0b1a951becdb27b936255a"
-  integrity sha512-I+O4gMQzQzd5dh8P7qMzpNiY2NVFtCzXbdEhLn6vFjXnz1Zq9YXerwIC4cHefnR+5VcfNeJvLwh8MYJnzwpjtA==
+"@well-known-components/thegraph-component@^1.2.0", "@well-known-components/thegraph-component@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@well-known-components/thegraph-component/-/thegraph-component-1.6.0.tgz#099466d0e8c21fcb34faa3351f33ab500b5cf928"
+  integrity sha512-LfBszhAnYRoLtLFkCDxjYIFFTk9mWL9wMPUSSnM0l/r0k/X3859DXXe2CrWIu3CeGpXdWI29YHE14EKvaBs3sw==
   dependencies:
-    "@well-known-components/http-server" "^1.1.0"
-    "@well-known-components/interfaces" "^1.1.0"
-
-"@well-known-components/thegraph-component@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@well-known-components/thegraph-component/-/thegraph-component-1.2.0.tgz#bb24e7b1572a10734fdfaac57892a71320de404f"
-  integrity sha512-fi+9oc+4pWaLXc0axFJfVVJO/j28D8/VlDbUuXg3351p2KHsAfs65pYnaHZNfCyw+OhOgBsmUTdJFucB3PAAZQ==
-  dependencies:
-    "@well-known-components/http-server" "^1.1.0"
-    "@well-known-components/interfaces" "^1.1.0"
+    "@well-known-components/interfaces" "^1.4.2"
 
 abab@^2.0.3, abab@^2.0.5:
   version "2.0.6"
